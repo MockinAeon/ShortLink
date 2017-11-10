@@ -1,25 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Meteor} from 'meteor/meteor';  
+import Modal from 'react-modal';
 
 export default class AddLink extends React.Component {
   constructor (props) {
     super (props);
     this.state = {
-      url: ''
+      url: '',
+      isOpen: false,
+      error: ''
     };
   }
   onSubmit (e) {
     const {url} = this.state;
     e.preventDefault();
 
-    if (url) {
-      Meteor.call('links.insert', url, (err, res) => {
-        if (!err) {
-          this.setState({url : ''});
-        }
-      });
-    }
+    Meteor.call('links.insert', url, (err, res) => {
+      if (!err) {
+        this.setState({url : '', isOpen: false, error: ''});
+      } else {
+        this.setState({error: err.reason});
+      }
+    });
   }
   onChange (e) {
     this.setState ({
@@ -29,15 +32,24 @@ export default class AddLink extends React.Component {
   render() {
     return (
       <div>
-        <p>Add Link</p>
-        <form onSubmit={this.onSubmit.bind(this)}>
-          <input 
-            type="test" 
-            placeholder="URL" 
-            value={this.state.url}
-            onChange={this.onChange.bind(this)}/>
-          <button>Add Link</button>
-        </form>
+        <button onClick={() => this.setState({isOpen: true})}>+ Add Link</button>
+        <Modal 
+          isOpen={this.state.isOpen} 
+          contentLabel="Add Link"
+          onAfterOpen={() => this.refs.url.focus()}>
+          <h1>Add Link</h1>
+          {this.state.error ? <p>{this.state.error}</p> : undefined} 
+          <form onSubmit={this.onSubmit.bind(this)}>
+            <input 
+              type="test" 
+              placeholder="URL" 
+              ref="url"
+              value={this.state.url}
+              onChange={this.onChange.bind(this)}/>
+            <button>Add Link</button>
+            <button onClick={() => this.setState({isOpen: false, url: '', error: ''})}>Cancel</button>
+          </form>
+        </Modal>
       </div>
     );
   }

@@ -5,6 +5,7 @@ import {Links} from '../imports/api/links.js';
 import '../imports/startup/simple-schema-configuration.js';
 
 Meteor.startup(() => {
+  process.env.ROOT_URL="http://xuranwang.com/";
   WebApp.connectHandlers.use((req, res, next) => {
     //set http status code, set http headers, set http body, end http request
     const _id = req.url.slice(1);
