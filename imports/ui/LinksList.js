@@ -26,7 +26,6 @@ export default class LinksList extends React.Component {
   }
 
   componentWillUnmount() {
-    console.log('componentWillUnmount LinksList');
     this.linksTracker.stop();
   }
 
